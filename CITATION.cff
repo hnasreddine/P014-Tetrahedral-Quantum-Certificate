@@ -1,0 +1,9 @@
+# This is a versioned software/data record; do not invent a DOI.
+cff-version: 1.2.0
+message: "If you use the E3 SOS certificate and exact verification code, cite this repository and the associated P014 manuscript when available."
+title: "Tetrahedral compression minimax E3: exact SOS certificate and verification code"
+type: software
+authors:
+  - family-names: Nasreddine
+    given-names: Hassan
+version: "2026.10.23-rc2"

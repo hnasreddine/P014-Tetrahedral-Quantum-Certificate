@@ -1,0 +1,25 @@
+name: Verify E3 exact certificate
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  exact-certificate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install verification dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgmp-dev
+          python -m pip install -r requirements.txt
+      - name: Reproduce precomputed exact certificate
+        run: bash RUN_PRECOMPUTED.sh
+      - name: Check physical examples separately
+        run: |
+          python physical_checks/check_explicit_energy_unitary.py
+          python physical_checks/check_taper_and_e2.py
