@@ -1,0 +1,61 @@
+name: Publish verified E3 release v0.1.0
+
+on:
+  workflow_dispatch:
+    inputs:
+      immutable_releases_enabled:
+        description: "Confirm: Repository Settings > Releases > Enable release immutability is ON"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ inputs.immutable_releases_enabled == true }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: v0.1.0
+      PINNED_SHA: a9bd70d0938461f08f728dc67949ed42e18cae2b
+      VERIFIED_RUN_ID: "39865130155"
+    steps:
+      - name: Check exact commit and successful verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/commits/${PINNED_SHA}" --jq '.sha' | grep -Fx "${PINNED_SHA}"
+          run_info="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${VERIFIED_RUN_ID}")"
+          test "$(jq -r '.conclusion' <<<"${run_info}")" = "success"
+          test "$(jq -r '.head_sha' <<<"${run_info}")" = "${PINNED_SHA}"
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${TAG} exists. Aborting to avoid modification."
+            exit 1
+          fi
+
+      - name: Publish pinned release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > release-notes.txt <<'EOF'
+          # E3 tetrahedral quantum minimax certificate — v0.1.0
+
+          First citable release of the exact algebraic certificate and reproducible verification code associated with the P014 tetrahedral quantum minimax result.
+
+          **Pinned verified source commit:** `a9bd70d0938461f08f728dc67949ed42e18cae2b`
+          
+          **Validation:** The GitHub Actions run [39865130155](https://github.com/hnasreddine/P014-Tetrahedral-Quantum-Certificate/actions/runs/39865130155) completed successfully on this exact commit. The precomputed exact SOS certificate checks and supplementary physical tests are provided in the source tree. Regenerating the certificate from the original optimization is a distinct, computationally more demanding procedure.
+
+          **Rights:** BSD-3-Clause for code and documentation; CC0 1.0 for exact mathematical certificate data, as specified in the repository.
+
+          This public release distributes research code and certificate data, not the private PRA manuscript or internal review files.
+          EOF
+          gh release create "${TAG}" --repo "${GITHUB_REPOSITORY}" --target "${PINNED_SHA}" --title "P014/E3 exact certificate v0.1.0" --notes-file release-notes.txt --latest
+          gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" --json url,tagName,targetCommitish,isDraft,isPrerelease --jq '.'
+          # GitHub's immutable-release setting must be enabled before this workflow is dispatched.
+          # A successful release is immutable only when GitHub shows "Immutable" on its release page.
