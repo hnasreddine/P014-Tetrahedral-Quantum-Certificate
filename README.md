@@ -1,8 +1,8 @@
 # Exact tetrahedral compression certificate — P014 reproducibility
 
-**Public computational supplement for referees** · prepared release candidate 2026-10-23
+**Public computational supplement for referees** · immutable release v0.1.1 (2026-10-23)
 
-This repository accompanies the PRA manuscript *Sharp Completeness Thresholds and Reservoir Costs Across Temperature Regimes*. It contains the machine-readable **E3 tracial sum-of-squares (SOS) certificate**, two independently implemented exact checking routes, exact equality checks, and non-proof numerical tests of the thermal implementation.
+This repository accompanies the PRA manuscript *Sharp Completeness Thresholds and Reservoir Costs Across Temperature Regimes*. It contains the machine-readable **E3 tracial sum-of-squares (SOS) certificate**, two exact checking routes with separate numerical/algebraic-field implementations (sharing the original canonical-word and moment rules), exact equality checks, and non-proof numerical tests of the thermal implementation.
 
 **Scientific claim certified by the E3 code:** for four contractions \(K_i:\mathbb C^m\to\mathbb C^n\),
 
@@ -18,8 +18,9 @@ The manuscript appendix supplies the **mathematical reduction** from physical co
 Prerequisites: Python 3.10+, NumPy, SymPy, C++17 compiler, GMP and GMPXX development libraries (for example `libgmp-dev` on Ubuntu).
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-tested.txt
 bash RUN_PRECOMPUTED.sh
+sha256sum -c MANIFEST_SHA256.txt
 ```
 
 This checks the supplied exact coefficient rows, the three dependent identities (rows 0, 225, 260), rigorous pivot enclosures, exact positive definiteness of the seven rational Gram approximants, the free-variable roundoff, and the exact 2-to-3 saturation. The 353-pivot error is bounded using integer/rational inequalities, not floating eigenvalues.
@@ -30,7 +31,7 @@ This checks the supplied exact coefficient rows, the three dependent identities 
 bash RUN_EXACT.sh
 ```
 
-This first reconstructs the 356 SOS coefficient equations from the original canonical-word and moment rules, regenerates the rational integer-check inputs (NumPy is used only to *propose* an approximate inverse), then validates them with exact GMP arithmetic. It can be considerably slower than the precomputed check. In the packaging audit, the reconstruction, rational enclosure, seven-block positivity and fixed-free checks all completed separately; the combined command hit the runtime limit before its final symbolic-saturation step. That symbolic step passed independently under `RUN_PRECOMPUTED.sh`.
+This regenerates all 356 SOS coefficient equations using separate exact integer/number-field arithmetic, compares the generated **decompressed** coefficient data with the published dataset, and independently recreates the integer verification inputs. It then checks rational inverse bounds, seven-block positivity, and exact sharpness. A temporary directory is used, leaving all versioned certificate bytes unchanged. It can take much longer than the precomputed check. The algebraic canonicalization (`E3_certificate/algebra.py`) and symmetry/moment rules (`E3_certificate/moments.py`) are **shared** between verification routes, so these are not independent formal proofs of the symbolic reduction.
 
 ## Original certificate verifier (optional, needs python-flint)
 
@@ -53,12 +54,22 @@ The first constructs a finite 40×40 global unitary that conserves total energy 
 ## Structure
 
 - `E3_certificate/`: original SOS data, Pauli-word algebra, moment rules, FLINT verifier, equality examples, optional generation pipeline.
-- `ind/`: independent number-field coefficient reconstruction, exact omitted-row relations, rigorous rational-inverse enclosure and exact saturation.
+- `ind/`: FLINT-independent exact field arithmetic, omitted-row relations, rigorous rational-inverse enclosure and exact saturation; **shares the original symbolic word/moment rules**.
 - `prior/`: precomputed rounded Gram inputs and exact rational LDLᵀ positivity checker.
 - `physical_checks/`: small numerical/constructive tests, not proof of global optimality.
 - `docs/PROOF_MAP.md`: correspondence with E3 certificate proof obligations and limitations.
 - `MANIFEST_SHA256.txt`: per-file release hashes, excluding the manifest itself.
 
-This repository deliberately does **not** contain the unpublished manuscript source/PDF, private research notes, editorial reports, personal contact information, generated binaries, or legacy attempts. There is no DOI yet; cite a tagged release/commit until an archive DOI is genuinely registered.
+This repository deliberately does **not** contain the unpublished manuscript source/PDF, private research notes, editorial reports, personal contact information, generated binaries, or legacy attempts. There is no DOI yet; cite the immutable `v0.1.1` release and its commit until an archive DOI is registered. Never assume the current `main` branch equals an immutable tag.
 
 **Licensing:** the original software and documentation are licensed under **BSD-3-Clause** (`LICENSE`), while specified mathematical certificate datasets are dedicated under **CC0-1.0** (`LICENSE-DATA`). See [`docs/LICENSE_SCOPE.md`](docs/LICENSE_SCOPE.md) for the precise file-level boundary. Reusing CC0 data does not legally require attribution, but citing the scientific work is requested.
+
+## Reproducibility boundary (v0.1.1)
+
+`RUN_EXACT.sh` writes regenerated intermediate certificate rows and integer inputs to a temporary directory. It compares the regenerated data to the published v0.1.1 files and leaves the recorded SHA-256 manifest unchanged. After either verifier:
+
+```bash
+sha256sum -c MANIFEST_SHA256.txt
+```
+
+The reference environment for the fast verification route is in `requirements-tested.txt`. The optional complete **optimization/regeneration** pipeline has additional dependencies; see `requirements-generator.txt`. Their original numerical optimization is **not** required to verify the supplied exact certificate.

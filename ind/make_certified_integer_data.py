@@ -6,7 +6,7 @@ import gzip,json,math,os
 import numpy as np
 from fractions import Fraction as Fr
 P=os.path.dirname(__file__)
-z=json.load(gzip.open(os.path.join(P,'fast_exact_rows.json.gz'),'rt'))
+z=json.load(gzip.open(os.environ.get('E3_GENERATED_ROWS_PATH',os.path.join(P,'fast_exact_rows.json.gz')),'rt'))
 D=z['W_DEN'];QQ=6*D*D;SA=10**12;SR=10**12;SB=10**12;SY=10**11
 BIG=10**40
 r2=math.isqrt(2*BIG*BIG);r3=math.isqrt(3*BIG*BIG);r6=math.isqrt(6*BIG*BIG)
@@ -63,7 +63,7 @@ print('float inverse rho',np.max(np.sum(abs(np.eye(n)-Rint.astype(float)@A/SR),a
 # ensure no INT64 overflow
 assert max(abs(int(v)) for row in Rint for v in row)<2**61
 assert max(abs(v) for row in A_sparse for _,v in row)<2**62
-fname=os.path.join(P,'integer_certificate_data.txt')
+fname=os.environ.get('E3_INTEGER_OUTPUT',os.path.join(P,'integer_certificate_data.txt'))
 with open(fname,'w') as f:
  f.write(f'{n} {SA} {SR} {SB} {SY}\n')
  f.write(str(maxerrA.numerator)+' '+str(maxerrA.denominator)+' '+str(maxerrB.numerator)+' '+str(maxerrB.denominator)+'\n')

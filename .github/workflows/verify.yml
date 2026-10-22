@@ -16,10 +16,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libgmp-dev
-          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-tested.txt
+      - name: Check immutable-source SHA-256 manifest
+        run: sha256sum -c MANIFEST_SHA256.txt
       - name: Reproduce precomputed exact certificate
         run: bash RUN_PRECOMPUTED.sh
       - name: Check physical examples separately
         run: |
           python physical_checks/check_explicit_energy_unitary.py
           python physical_checks/check_taper_and_e2.py
+      - name: Recheck file integrity after verification
+        run: sha256sum -c MANIFEST_SHA256.txt

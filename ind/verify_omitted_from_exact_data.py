@@ -4,7 +4,7 @@ No numerical solver, numpy, scipy or flint required.
 import gzip,json,os
 from fractions import Fraction as Fr
 P=os.path.dirname(__file__)
-z=json.load(gzip.open(os.path.join(P,'fast_exact_rows.json.gz'),'rt'))
+z=json.load(gzip.open(os.environ.get('E3_GENERATED_ROWS_PATH',os.path.join(P,'fast_exact_rows.json.gz')),'rt'))
 rel=json.load(open(os.path.join(P,'omitted_row_relations_exact.json')))
 
 def mul(u,v):

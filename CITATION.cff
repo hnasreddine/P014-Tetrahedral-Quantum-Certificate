@@ -6,4 +6,6 @@ type: software
 authors:
   - family-names: Nasreddine
     given-names: Hassan
-version: "2026.10.23-rc2"
+version: "v0.1.1"
+date-released: 2026-10-23
+repository-code: "https://github.com/hnasreddine/P014-Tetrahedral-Quantum-Certificate"

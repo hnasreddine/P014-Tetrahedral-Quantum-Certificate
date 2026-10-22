@@ -1,11 +1,13 @@
-# Publication checklist — P014/E3 referee code
+# Referee reproduction checklist — immutable release v0.1.1
 
-1. Create a **new public repository** under `hnasreddine` named `P014-Tetrahedral-Quantum-Certificate`. Do not use or change the existing FortiSec/ARI repositories. GitHub UI: <https://github.com/new>.
-2. For connector-assisted upload, initialize it with a README to create a `main` branch; then request an upload of the prepared package via the connected GitHub integration. (If uploading manually, unzip this archive and add **all its contents**, not the ZIP itself.)
-3. Review file visibility, especially that no unpublished manuscript, personal contacts, internal audit, environment files or company code are present.
-4. Review [`LICENSE`](LICENSE), [`LICENSE-DATA`](LICENSE-DATA), and [`docs/LICENSE_SCOPE.md`](docs/LICENSE_SCOPE.md).
-5. Verify GitHub Actions `Verify E3 exact certificate` completes on the public `main` branch; you may also run `bash RUN_PRECOMPUTED.sh` locally.
-6. Make an immutable tagged release (e.g., `v0.1.0`) referencing its commit SHA. If depositing on Zenodo, wait for a real DOI before updating `CITATION.cff` and the manuscript.
-7. Only after the public URL and release exist, update the private Overleaf manuscript's Data Availability Statement with the exact URL, tag, and (if available) DOI.
+This document refers to the public `v0.1.1` release. All instructions below operate on the versioned archive rather than a moving `main` branch.
 
-The precomputed check verifies the supplied mathematical certificate using exact arithmetic. The optional full reconstruction is slower; the physical example scripts are supporting checks, not proofs of all resource asymptotics.
+1. Read `docs/PROOF_MAP.md` and understand the mathematical assumptions connecting the tracial SOS certificate to the published E3 theorem.
+2. Install GMP/C++17 and Python dependencies as documented in `README.md` and `requirements-tested.txt`.
+3. Check release integrity: `sha256sum -c MANIFEST_SHA256.txt`.
+4. Reproduce the fast exact proof-data verification: `bash RUN_PRECOMPUTED.sh`.
+5. Run `bash RUN_EXACT.sh` for the slower reconstruction of all 356 coefficient equations from **shared** canonicalization rules, independent field arithmetic, and exact certificates. Check `sha256sum -c MANIFEST_SHA256.txt` again afterward.
+6. The independent 2-to-3 saturation is checked symbolically; physical scripts provide examples, not universal proofs.
+7. Citation: use the immutable GitHub release `v0.1.1` and its pinned commit until a Zenodo DOI is actually available. Do not cite unpublished internal drafts from this repository.
+
+No mathematical coefficient, E3 bound, or published input certificate has been altered by the v0.1.1 maintenance patch. The v0.1.0 release is preserved unchanged.

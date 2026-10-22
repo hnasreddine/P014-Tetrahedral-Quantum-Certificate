@@ -2,7 +2,7 @@
 Stores all entries in Z[sqrt2,sqrt3] using a uniform W denominator.
 This is independent of FLINT. No float arithmetic occurs.
 """
-import sys,os,types,json,gzip,time,math
+import sys,os,types,json,gzip,time,math,io
 from fractions import Fraction as Fr
 SRC=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','E3_certificate'))
 sys.path.insert(0,SRC)
@@ -163,6 +163,8 @@ for i,R in enumerate(rows):
  full.append(([(pidx[j], [6*k for k in v.v]) for j,v in R.items() if j in pivset],acc))
 out={'W_DEN':DEN,'pivots':piv,'used':keep,'blocks':ORDER,'sizes':cert['block_sizes'],
      'allrows':[[[[int(j),v] for j,v in row], [str(z) for z in b]] for row,b in full]}
-p=os.path.join(os.path.dirname(__file__),'fast_exact_rows.json.gz')
-with gzip.open(p,'wt') as f:json.dump(out,f)
+p=os.environ.get('E3_GENERATED_ROWS_PATH',os.path.join(os.path.dirname(__file__),'fast_exact_rows.json.gz'))
+with open(p,'wb') as raw:
+ with gzip.GzipFile(fileobj=raw,mode='wb',filename='',mtime=0) as gz:
+  with io.TextIOWrapper(gz,encoding='utf-8') as f:json.dump(out,f)
 print('DONE',len(full),'rows',npv,'pivots',sum(len(r) for r,b in full),'entries',os.stat(p).st_size,flush=True)

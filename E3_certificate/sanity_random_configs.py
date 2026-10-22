@@ -4,13 +4,14 @@
 on explicit A4-symmetrized configurations (random ones and the two optimal ones), using matrices only.
 Run verify_certificate.py first (it writes Y_float.npz)."""
 import json, gzip, numpy as np
+from fractions import Fraction
 from algebra import GROUP, SIGNS
 from field import K
 from configs_exact import config43, ideal_config
 cert=json.load(gzip.open('certificate_data.json.gz','rt')); ORDER=cert['blocks']
 Y=dict(np.load('Y_float.npz'))
 def fl(l):
-    v=[float(eval(s)) if '/' in s else float(int(s)) for s in l]
+    v=[float(Fraction(str(s))) for s in l]
     return v[0]+v[1]*2**0.5+v[2]*3**0.5+v[3]*6**0.5
 W={n:np.array([[fl(e[:4])+1j*fl(e[4:]) for e in col] for col in cert['W'][n]]).T for n in ORDER}
 def words(which):
