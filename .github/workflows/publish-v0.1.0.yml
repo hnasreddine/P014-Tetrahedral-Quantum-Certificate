@@ -1,6 +1,10 @@
 name: Publish verified E3 release v0.1.0
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-v0.1.0.yml"
   workflow_dispatch:
     inputs:
       immutable_releases_enabled:
@@ -14,7 +18,7 @@ permissions:
 
 jobs:
   publish:
-    if: ${{ inputs.immutable_releases_enabled == true }}
+    if: ${{ github.event_name == 'push' || inputs.immutable_releases_enabled == true }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
