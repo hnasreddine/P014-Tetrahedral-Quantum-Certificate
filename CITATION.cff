@@ -1,4 +1,4 @@
-# This is a versioned software/data record; do not invent a DOI.
+# Citable v0.1.1 archive deposited on Zenodo (immutable research artifact).
 cff-version: 1.2.0
 message: "If you use the E3 SOS certificate and exact verification code, cite this repository and the associated P014 manuscript when available."
 title: "Tetrahedral compression minimax E3: exact SOS certificate and verification code"
@@ -9,3 +9,5 @@ authors:
 version: "v0.1.1"
 date-released: 2026-10-23
 repository-code: "https://github.com/hnasreddine/P014-Tetrahedral-Quantum-Certificate"
+doi: 10.5281/zenodo.23581109
+url: "https://doi.org/10.5281/zenodo.23581109"

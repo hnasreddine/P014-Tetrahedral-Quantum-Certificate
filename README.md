@@ -60,7 +60,7 @@ The first constructs a finite 40×40 global unitary that conserves total energy 
 - `docs/PROOF_MAP.md`: correspondence with E3 certificate proof obligations and limitations.
 - `MANIFEST_SHA256.txt`: per-file release hashes, excluding the manifest itself.
 
-This repository deliberately does **not** contain the unpublished manuscript source/PDF, private research notes, editorial reports, personal contact information, generated binaries, or legacy attempts. There is no DOI yet; cite the immutable `v0.1.1` release and its commit until an archive DOI is registered. Never assume the current `main` branch equals an immutable tag.
+This repository deliberately does **not** contain the unpublished manuscript source/PDF, private research notes, editorial reports, personal contact information, generated binaries, or legacy attempts. The immutable `v0.1.1` release is archived on Zenodo as [DOI: 10.5281/zenodo.23581109](https://doi.org/10.5281/zenodo.23581109). Cite this version-specific DOI and the pinned GitHub release; the archived release contents are unchanged. Never assume the current `main` branch equals an immutable tag.
 
 **Licensing:** the original software and documentation are licensed under **BSD-3-Clause** (`LICENSE`), while specified mathematical certificate datasets are dedicated under **CC0-1.0** (`LICENSE-DATA`). See [`docs/LICENSE_SCOPE.md`](docs/LICENSE_SCOPE.md) for the precise file-level boundary. Reusing CC0 data does not legally require attribution, but citing the scientific work is requested.
 
