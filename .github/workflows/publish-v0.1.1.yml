@@ -1,0 +1,58 @@
+name: Publish immutable E3 release v0.1.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-v0.1.1.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PINNED_SHA: 17e1d5e99d4a03fd44da1f8f44609ff4494a7d54
+      VERIFIED_RUN_ID: "39870156595"
+      TAG: v0.1.1
+    steps:
+      - name: Verify the scientific commit and passing CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/commits/${PINNED_SHA}" --jq '.sha' | grep -Fx "${PINNED_SHA}"
+          run_info="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${VERIFIED_RUN_ID}")"
+          test "$(jq -r '.conclusion' <<<"${run_info}")" = "success"
+          test "$(jq -r '.head_sha' <<<"${run_info}")" = "${PINNED_SHA}"
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release already exists. Refusing to modify or replace it."
+            exit 1
+          fi
+      - name: Publish immutable patch release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > notes.txt <<'EOF'
+          # Tetrahedral E3 exact referee certificate — v0.1.1
+
+          Maintenance and reproducibility patch over the immutable v0.1.0 release.
+
+          **Pinned source commit:** `17e1d5e99d4a03fd44da1f8f44609ff4494a7d54`.
+          **Verification:** [GitHub Actions run 39870156595](https://github.com/hnasreddine/P014-Tetrahedral-Quantum-Certificate/actions/runs/39870156595) passed on the exact pinned commit.
+
+          **Fixes:** versioned `CITATION.cff`; reproducible gzip regeneration with temporary intermediate files and stable SHA-256 manifest; accurate disclosure of shared canonicalization rules; tested Python dependency versions; removal of `eval()` from an auxiliary sanity script; CI integrity checks.
+
+          **Scientific content unchanged:** the 356 exact SOS coefficient equations, the seven original Gram blocks, the 353-pivot certificate and the universal tetrahedral minimax theorem are unchanged. The original v0.1.0 release remains available.
+
+          **Rights:** BSD-3-Clause for source code/documentation and CC0 1.0 for exact certificate data. The private PRA manuscript and internal referee reports are not included.
+
+          Use `bash RUN_PRECOMPUTED.sh` for the fast exact check, or `bash RUN_EXACT.sh` for full equation reconstruction. The latter shares the canonical-word and moment-symmetry rules with the original implementation, as explained in `docs/PROOF_MAP.md`.
+          EOF
+          gh release create "${TAG}" --repo "${GITHUB_REPOSITORY}" --target "${PINNED_SHA}" --title "P014/E3 exact certificate v0.1.1" --notes-file notes.txt --latest
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.immutable' | grep -Fx true
+          gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" --json url,tagName,targetCommitish
